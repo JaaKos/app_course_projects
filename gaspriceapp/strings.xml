@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Hintalaskuri</string>
+    <string name="App_title">Bensan hinta -laskuri</string>
+    <string name="Gas_price">Polttoaineen hinta</string>
+    <string name="car_consumption_100km">Auton kulutus (100km)</string>
+    <string name="distance">Kuljettu matka</string>
+    <string name="button_text">Laske</string>
+    <string name="total_cost">Matkan kokonaishinta on %1$s€</string>
+</resources>

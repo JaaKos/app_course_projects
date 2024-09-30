@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cost calculator</string>
+    <string name="App_title">Gas price calculator</string>
+    <string name="Gas_price">Gas price</string>
+    <string name="car_consumption_100km">Car consumption (100km)</string>
+    <string name="distance">Traveled distance</string>
+    <string name="button_text">Calculate</string>
+    <string name="total_cost">Total cost of the trip is %1$s€</string>
+</resources>
