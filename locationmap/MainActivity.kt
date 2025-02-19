@@ -1,8 +1,10 @@
 package com.example.locationapp
 
 import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,19 +36,32 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val AirplaneModeReceiver = MyBroadcastReceiver()
+        val filter = IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+        registerReceiver(AirplaneModeReceiver, filter)
+
         enableEdgeToEdge()
         setContent {
             App()
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(MyBroadcastReceiver()) // Unregister when activity is destroyed
+    }
 }
 
 @Composable
 fun App(viewModel: LocationViewModel = viewModel()) {
+    val isAirplaneModeOn by AirplaneModeManager.isAirplaneModeEnabled
     val context = LocalContext.current
     val locationCoords by viewModel.locationState.collectAsState()
     val locationText = "%.2f".format(locationCoords.first)  + " " + "%.2f".format(locationCoords.second)
     var isMonitoring by remember { mutableStateOf(false) }
+
+
 
     val requestPermissionLauncher =
         rememberLauncherForActivityResult(
@@ -64,6 +80,7 @@ fun App(viewModel: LocationViewModel = viewModel()) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (isAirplaneModeOn) { Text("Lentokonetila, sijaintipäivitys ei käytössä" , color = Color.Red)}
         Text(text = locationText, modifier = Modifier.padding(bottom = 16.dp))
         Button(onClick = {
             isMonitoring = !isMonitoring
@@ -77,7 +94,7 @@ fun App(viewModel: LocationViewModel = viewModel()) {
             Text(if (isMonitoring) "Lopeta" else "Aloita")
         }
 
-        Button(onClick = {openMaps(context, latitude = locationCoords.first, longitude = locationCoords.second)}, Modifier.align(Alignment.CenterHorizontally)) { Text("Show map location") }
+        Button(onClick = {openMaps(context, latitude = locationCoords.first, longitude = locationCoords.second)}, Modifier.align(Alignment.CenterHorizontally)) { Text("Näytä kartalla") }
     }
 }
 
