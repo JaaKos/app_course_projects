@@ -48,7 +48,7 @@ Rectangle {
                 x: 0
                 width: 95
                 height: 32
-                text: qsTr("Helsinki:")
+                text: qsTr("Tampere")
                 font.pixelSize: 24
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignTop
@@ -86,6 +86,38 @@ Rectangle {
             source: "images/cloudy.png"
             scale: 0.5
             fillMode: Image.PreserveAspectFit
+        }
+    }
+
+    Button {
+        id: button
+        x: 286
+        y: 373
+        text: qsTr("Refresh")
+
+        Connections {
+            target: button
+            onClicked: {
+                const apiKey = ''
+                let xhr = new XMLHttpRequest()
+                xhr.open("GET",
+                         `https://api.openweathermap.org/data/2.5/weather?q=${_text.text}&appid=${apiKey}&units=metric`)
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            const weatherData = JSON.parse(xhr.responseText)
+                            _text1.text = weatherData.main.temp + "°C"
+                            const weatherIconCode = weatherData.weather[0].icon
+                            let iconUrl = `http://openweathermap.org/img/wn/${weatherIconCode}@2x.png`
+                            image.source = iconUrl
+                        } else {
+                            console.log("HTTP Error:", xhr.status)
+                        }
+                    }
+                }
+
+                xhr.send()
+            }
         }
     }
 
