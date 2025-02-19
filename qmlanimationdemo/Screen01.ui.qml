@@ -61,53 +61,75 @@ Rectangle {
     Timer {
         id: timer
         property int state: 0
+        property bool paused: true
+        triggeredOnStart: false
         repeat: true
-        running: false
+        running: true
     }
 
     Connections {
         target: timer
         onTriggered: {
-            rectangle1.color.hslLightness = 0.3
-            rectangle2.color.hslLightness = 0.3
-            rectangle3.color.hslLightness = 0.3
-            timer.state++
+            if (!customSwitch.toggle) {
+                rectangle1.color.hslLightness = 0.3
+                rectangle3.color.hslLightness = 0.3
 
-            if (timer.state == 1) {
-                rectangle1.color.hslLightness = 0.5
-            } else if (timer.state == 2) {
-                rectangle1.color.hslLightness = 0.5
-                rectangle2.color.hslLightness = 0.5
-            } else if (timer.state == 3) {
-                rectangle3.color.hslLightness = 0.5
-            } else if (timer.state == 4) {
-                rectangle2.color.hslLightness = 0.5
-                timer.state = 0
+                if (rectangle2.color.hslLightness > 0.4) {
+                    rectangle2.color.hslLightness = 0.3
+                } else {
+                    rectangle2.color.hslLightness = 0.5
+                }
+            } else if (!timer.paused) {
+                rectangle1.color.hslLightness = 0.3
+                rectangle2.color.hslLightness = 0.3
+                rectangle3.color.hslLightness = 0.3
+
+                timer.state++
+
+                if (timer.state == 1) {
+                    rectangle1.color.hslLightness = 0.5
+                } else if (timer.state == 2) {
+                    rectangle1.color.hslLightness = 0.5
+                    rectangle2.color.hslLightness = 0.5
+                } else if (timer.state == 3) {
+                    rectangle3.color.hslLightness = 0.5
+                } else if (timer.state == 4) {
+                    rectangle2.color.hslLightness = 0.5
+                    timer.state = 0
+                }
             }
         }
     }
 
+    CustomSwitch {
+        id: customSwitch
+        x: 429
+        y: 279
+        text: "On/Off"
+        toggle: false
+        buttonColor: "#990000"
+    }
+
     CustomButton {
         id: customButton
-        x: 430
+        x: 429
         y: 165
-        color: "#998e00"
+        color: "#999300"
         text: "Start/Stop"
-        buttonColor: "#fff352"
-        property bool running: false
+        buttonColor: "#889900"
 
         Connections {
             target: customButton
-            onClicked: {
-                customButton.running = !customButton.running
-                if (customButton.running) {
-                    customButton.color.hslLightness = 0.5
-                    timer.start()
-                } else {
-                    customButton.color.hslLightness = 0.3
-                    timer.stop()
-                }
-            }
+            onClicked: if (!customSwitch.toggle)
+                           return
+                       else {
+                           timer.paused = !timer.paused
+                           if (!timer.paused) {
+                               customButton.color.hslLightness = 0.5
+                           } else {
+                               customButton.color.hslLightness = 0.3
+                           }
+                       }
         }
     }
     states: [
