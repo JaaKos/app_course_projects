@@ -14,8 +14,19 @@ Rectangle {
     id: rectangle
     width: Constants.width
     height: Constants.height
+    gradient: Gradient {
+        GradientStop {
+            position: 0
+            color: "#ffffff"
+        }
 
-    color: Constants.backgroundColor
+        GradientStop {
+            position: 1
+            color: "#000000"
+        }
+        orientation: Gradient.Vertical
+    }
+
 
     Image {
         id: image
