@@ -4,36 +4,46 @@ Canvas {
     id: myCanvas
     width: 300
     height: 200
-
-    property real ballX: -1
-    property real ballY: -1
-    property real speedX: 0
-    property real speedY: 0
     property real ballSize: 20
     property color ballColor: "green"
+
+    ListModel {
+        id: ballModel
+    }
 
     onPaint: {
         var ctx = getContext("2d");
         ctx.clearRect(0, 0, width, height);
 
-        if (ballX > 0 && ballY > 0) {
-            ctx.fillStyle = ballColor;
+        for (let i = 0; i < ballModel.count; i++) {
+            let ball = ballModel.get(i);
+            ctx.fillStyle = ball.ballColor;
             ctx.beginPath();
-            ctx.arc(ballX, ballY, ballSize, 0, 2 * Math.PI);
+            ctx.arc(ball.ballX, ball.ballY, ball.ballSize, 0, 2 * Math.PI);
             ctx.fill();
         }
+    }
+
+    function getRandomColor(){
+        let hue = parseInt(Math.random() * 360)
+        let saturation = 100
+        let lightness = 50
+        return `hsl(${hue}, ${saturation}%, ${lightness}%)`
     }
 
     MouseArea {
         anchors.fill: parent
         onClicked: (mouse) => {
-            ballX = mouse.x;
-            ballY = mouse.y;
-            ballColor.hslHue = Math.random()
-            speedX = (Math.random() - 0.5) * 10;
-            speedY = (Math.random() - 0.5) * 10;
+            ballModel.append({
+                ballX: mouse.x,
+                ballY: mouse.y,
+                ballColor: getRandomColor(),
+                ballSize: 20,
+                speedX: (Math.random() - 0.5) * 10,
+                speedY: (Math.random() - 0.5) * 10
+            })
             requestPaint();
-            updateTimer.start()
+            updateTimer.start();
         }
     }
 
@@ -43,16 +53,21 @@ Canvas {
         running: false
         repeat: true
         onTriggered: {
-            while (ballX + speedX < 20 || ballX + speedX > 280) {
-                speedX = (Math.random() - 0.5) * 10;
-            }
-            while (ballY + speedY < 20 || ballY + speedY > 180) {
-                speedY = (Math.random() - 0.5) * 10;
+            for (let i = 0; i < ballModel.count; i++) {
+                let ball = ballModel.get(i);
+
+                while (ball.ballX + ball.speedX < 20 || ball.ballX + ball.speedX > 280) {
+                    ball.speedX = (Math.random() - 0.5) * 10;
+                }
+                while (ball.ballY + ball.speedY < 20 || ball.ballY + ball.speedY > 180) {
+                    ball.speedY = (Math.random() - 0.5) * 10;
+                }
+
+                ball.ballX += ball.speedX;
+                ball.ballY += ball.speedY;
             }
 
-            ballX += speedX
-            ballY += speedY
-            myCanvas.requestPaint()
+            myCanvas.requestPaint();
         }
     }
 }
